@@ -658,5 +658,53 @@ public class StringUtils {
     public static String checkLength(String string, int maxLength) {
         return checkLength(string, maxLength, "…");
     }
+
+
+	/**
+     * 将字符串转成图片到存储卡
+     *
+     * @param path 文件保存路径
+     * @param str  要转换的文字
+     * @param leng 一行要几个字
+     */
+    public static Bitmap stringToImage(String path, String str, int leng) {
+        ArrayList<String> data = new ArrayList<String>();
+        String substring;
+        for (int i = 0; i <= Math.ceil(str.length() / leng); i++) {
+            if (i == Math.ceil(str.length() / leng)) {
+                //当是i为最后一位时，直接截取到最后
+                substring = str.substring(i * leng, str.length());
+            } else {
+                //否则就截取为leng的长度
+                substring = str.substring(i * leng, (i + 1) * leng);
+            }
+            data.add(substring);
+        }
+        try {
+            int height = data.size() * 24;     //图片高
+            Bitmap bitmap = Bitmap.createBitmap(leng * 20, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawColor(Color.WHITE);   //背景颜色
+
+            Paint p = new Paint();
+            p.setAntiAlias(true);//设置抗锯齿
+            p.setColor(Color.BLACK);   //画笔颜色
+            p.setTextSize(15);         //画笔粗细
+            for (int i = 0; i < data.size(); i++) {
+                canvas.drawText(data.get(i), 20, (i + 1) * 20, p);
+            }
+
+            Log.e("path", path);
+            //将Bitmap保存为png图片
+            FileOutputStream out = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            Log.e("done", "done");
+            return bitmap;
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 
